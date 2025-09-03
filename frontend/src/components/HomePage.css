@@ -352,10 +352,11 @@
   margin-bottom: var(--space-xl);
 }
 
+
 .feed-container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  /* gap: var(--space-lg); */
 }
 
 /* Trending Sidebar */
@@ -507,7 +508,6 @@
   color: var(--text-tertiary);
   font-style: italic;
 }
-
 /* Responsive Design */
 @media (max-width: 1200px) {
     .content-wrapper {

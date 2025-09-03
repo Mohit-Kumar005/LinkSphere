@@ -33,9 +33,9 @@ const HomePage = ({ navigateTo, idToken }) => {
                             <path d="M19.5 3h-15A1.5 1.5 0 003 4.5v15A1.5 1.5 0 004.5 21h15a1.5 1.5 0 001.5-1.5v-15A1.5 1.5 0 0019.5 3z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                             <path d="M7 12h10M12 7v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                         </svg>
-                        <span className="app-name">Nexus</span>
+                        <span className="app-name">LinkSphere</span>
                     </div>
-                    <p className="app-tagline">Connect, Share, Discover</p>
+                    <p className="app-tagline">Connect, Share & Discover</p>
                 </div>
                 <div className="profile-card">
                     <div className="profile-header">
@@ -91,7 +91,7 @@ const HomePage = ({ navigateTo, idToken }) => {
                 </nav>
             </div>
             
-            <main className="main-content">
+            <main className="main-content" style={{ display: 'block', alignContent: 'flex-start' }}>
                 <div className="content-header">
                     <h1 className="content-title">Home Feed</h1>
                 </div>

@@ -5,6 +5,7 @@
   animation: fadeIn 0.6s ease;
 }
 
+/* Card styles moved from theme.css and customized */
 .post-id {
   background-color: var(--background-card);
   border-radius: var(--card-border-radius);
@@ -16,11 +17,11 @@
   border: 1px solid var(--border-color);
 }
 
-.post-id:hover {
+/* .post-id:hover {
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
   border-color: var(--border-color-hover);
-}
+} */
 
 .post-header {
   display: flex;
@@ -36,7 +37,7 @@
 }
 
 .author-post {
-  color: var(--primary-color);
+  color: var(--primary-light);
   font-weight: 600;
   font-size: var(--font-size-lg);
   cursor: pointer;
@@ -113,6 +114,7 @@
   animation: fadeIn 0.3s ease;
 }
 
+/* Form element styles moved from theme.css and customized */
 .edit-textarea {
   width: 100%;
   min-height: 120px;
@@ -134,6 +136,10 @@
   box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.25);
 }
 
+.edit-textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
 .edit-actions {
   display: flex;
   gap: var(--space-md);
@@ -153,11 +159,6 @@
 .save-btn {
   background-color: var(--success-color);
   color: white;
-}
-
-.save-btn:hover {
-  background-color: rgba(0, 184, 148, 0.9);
-  transform: translateY(-1px);
 }
 
 .cancel-btn {
@@ -268,11 +269,11 @@
 }
 
 .reaction-btn.liked {
-  color: var(--error-color);
+  color: var(--primary-light);
 }
 
 .reaction-btn.liked:hover {
-  background-color: rgba(214, 48, 49, 0.1);
+  background-color: rgba(158, 128, 222, 0.1);
 }
 
 @keyframes spin {

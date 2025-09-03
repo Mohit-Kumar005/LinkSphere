@@ -57,7 +57,7 @@ const Navbar = ({ navigateTo, handleLogout }) => {
                                 <path d="M7 12h10M12 7v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                             </svg>
                         </div>
-                        <span>Nexus</span>
+                        <span>LinkSphere</span>
                     </div>
 
                     <nav className="navbar-nav desktop-only">

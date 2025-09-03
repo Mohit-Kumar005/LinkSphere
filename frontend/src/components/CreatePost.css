@@ -39,6 +39,7 @@
   gap: var(--space-lg);
 }
 
+/* Textarea styling adapted from theme.css input styles */
 .post-txt {
   width: 100%;
   padding: var(--space-xl);
@@ -274,7 +275,7 @@
   overflow: hidden;
   transition: all 0.3s ease;
   border: 1px solid var(--border-color);
-  margin-bottom: var(--space-xl);
+  margin-bottom: 0;
 }
 
 .composer-card:hover,

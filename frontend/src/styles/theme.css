@@ -90,33 +90,32 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  font-weight: 700;
-  line-height: 1.2;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-h1 { font-size: var(--font-size-4xl); }
-h2 { font-size: var(--font-size-3xl); }
-h3 { font-size: var(--font-size-2xl); }
-h4 { font-size: var(--font-size-xl); }
-h5 { font-size: var(--font-size-lg); }
-h6 { font-size: var(--font-size-base); }
-
-a {
-  color: var(--primary-light);
-  text-decoration: none;
-  transition: color 0.2s ease;
+::-webkit-scrollbar-track {
+  background: var(--background-secondary);
 }
 
-a:hover {
-  color: var(--primary-color);
+::-webkit-scrollbar-thumb {
+  background: var(--background-elevated);
+  border-radius: 4px;
 }
 
-/* Animation Classes */
-.fade-in {
-  animation: fadeIn 0.5s ease forwards;
+::-webkit-scrollbar-thumb:hover {
+  background: #353551;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  :root {
+    --space-lg: 1rem;
+    --space-xl: 1.5rem;
+    --space-2xl: 2rem;
+  }
 }
 
 .slide-up {

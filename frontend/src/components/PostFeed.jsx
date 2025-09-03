@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { auth } from '../firebase';
 import { API_URL } from '../config';
-import './PostFeed.css';
+import { auth } from '../firebase';
+import './postfeed.css';
 
 const PostFeed = ({ navigateTo, userId = null }) => {
     const [posts, setPosts] = useState([]);
@@ -10,31 +10,35 @@ const PostFeed = ({ navigateTo, userId = null }) => {
     const [editText, setEditText] = useState('');
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const [likes, setLikes] = useState({});
 
     const fetchPosts = () => {
         const url = userId ? `${API_URL}/api/users/${userId}/posts` : `${API_URL}/api/posts`;
-        fetch(url)
+        // Attach auth token to get user-specific like status
+        const fetchOptions = { headers: {} };
+        if (auth.currentUser) {
+            auth.currentUser.getIdToken()
+                .then(token => {
+                    fetchOptions.headers['Authorization'] = `Bearer ${token}`;
+                    executeFetch(url, fetchOptions);
+                });
+        } else {
+            executeFetch(url, fetchOptions);
+        }
+    };
+    
+    const executeFetch = (url, options) => {
+         fetch(url, options)
             .then(res => res.json())
             .then(data => {
                 setPosts(data);
                 setLoading(false);
-                
-                // Initialize likes state for each post
-                const likesState = {};
-                data.forEach(post => {
-                    likesState[post.id] = {
-                        count: post.likes || 0,
-                        userLiked: post.userLiked || false
-                    };
-                });
-                setLikes(likesState);
             })
             .catch(error => { 
                 console.error("Error fetching posts:", error);
+                setError('Could not fetch posts.');
                 setLoading(false);
             });
-    };
+    }
 
     useEffect(() => {
         fetchPosts();
@@ -91,37 +95,42 @@ const PostFeed = ({ navigateTo, userId = null }) => {
     };
 
     const handleLike = async (postId) => {
+        if (!auth.currentUser) {
+            setError("You must be logged in to like a post.");
+            setTimeout(() => setError(''), 3000);
+            return;
+        }
+
+        const originalPosts = [...posts];
         // Optimistic UI update
-        const currentLikeStatus = likes[postId]?.userLiked || false;
-        
-        setLikes(prev => ({
-            ...prev,
-            [postId]: {
-                count: prev[postId].count + (currentLikeStatus ? -1 : 1),
-                userLiked: !currentLikeStatus
-            }
-        }));
+        setPosts(currentPosts => 
+            currentPosts.map(p => {
+                if (p.id === postId) {
+                    const liked = p.userLiked;
+                    return { 
+                        ...p, 
+                        likes: liked ? p.likes - 1 : p.likes + 1,
+                        userLiked: !liked
+                    };
+                }
+                return p;
+            })
+        );
         
         try {
             const token = await auth.currentUser.getIdToken();
             const response = await fetch(`${API_URL}/api/posts/${postId}/like`, {
-                method: currentLikeStatus ? 'DELETE' : 'POST',
+                method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
             if (!response.ok) {
-                // Revert optimistic update if request failed
-                setLikes(prev => ({
-                    ...prev,
-                    [postId]: {
-                        count: prev[postId].count - (currentLikeStatus ? -1 : 1),
-                        userLiked: currentLikeStatus
-                    }
-                }));
+                setPosts(originalPosts); // Revert on error
                 throw new Error('Failed to update like status');
             }
         } catch (err) {
             setError(err.message);
+            setPosts(originalPosts); // Revert on error
             setTimeout(() => setError(''), 3000);
         }
     };
@@ -146,7 +155,7 @@ const PostFeed = ({ navigateTo, userId = null }) => {
                 <div className="post-spinner"></div>
                 <p>Loading posts...</p>
             </div>
-        );
+        ); 
     }
 
     return (
@@ -219,20 +228,20 @@ const PostFeed = ({ navigateTo, userId = null }) => {
                             <div className="post-footer">
                                 <div className="post-reactions">
                                     <button 
-                                        className={`reaction-btn ${likes[post.id]?.userLiked ? 'liked' : ''}`}
+                                        className={`reaction-btn ${post.userLiked ? 'liked' : ''}`}
                                         onClick={() => handleLike(post.id)}
                                     >
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill={likes[post.id]?.userLiked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill={post.userLiked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
                                         </svg>
-                                        {likes[post.id]?.count || 0}
+                                        <span>{post.likes || 0}</span>
                                     </button>
                                     
                                     <button className="reaction-btn">
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                                         </svg>
-                                        Reply
+                                        <span>Reply</span>
                                     </button>
                                     
                                     <button className="reaction-btn">
@@ -243,7 +252,7 @@ const PostFeed = ({ navigateTo, userId = null }) => {
                                             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
                                             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                                         </svg>
-                                        Share
+                                        <span>Share</span>
                                     </button>
                                 </div>
                             </div>

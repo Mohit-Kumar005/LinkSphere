@@ -1,17 +1,29 @@
 import express from 'express';
-import { getAllPosts, createPost, deletePost, updatePost } from '../controllers/postController.js';
+// Import the new controller functions
+import { 
+    getAllPosts, 
+    createPost, 
+    deletePost, 
+    updatePost, 
+    likePost,
+    sharePost,
+    addComment
+} from '../controllers/postController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// GET /api/posts - Fetches all posts for the main feed
-router.get('/', getAllPosts);
-
-// POST /api/posts - Creates a new post (requires authentication)
+// Existing Routes
+router.get('/', authMiddleware, getAllPosts);
 router.post('/', authMiddleware, createPost);
+router.delete('/:postId', authMiddleware, deletePost);
+router.put('/:postId', authMiddleware, updatePost);
+router.post('/:postId/like', authMiddleware, likePost);
 
-router.delete('/:postId', authMiddleware, deletePost); // New DELETE route
-router.put('/:postId', authMiddleware, updatePost); // New PUT route for updates
+// --- NEW ROUTES ---
+// Route for sharing a post
+router.post('/:postId/share', authMiddleware, sharePost);
+// Route for adding a comment (reply) to a post
+router.post('/:postId/comments', authMiddleware, addComment);
 
 export default router;
-

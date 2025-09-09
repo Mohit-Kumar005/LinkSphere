@@ -332,6 +332,18 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.hashtag-link {
+    color: var(--primary-color);
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+.hashtag-link:hover {
+    color: var(--primary-light);
+    text-decoration: underline;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .profile-container {

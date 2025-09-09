@@ -9,12 +9,14 @@ import HomePage from './components/HomePage';
 import ProfilePage from './components/ProfilePage';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
+import HashtagPage from './components/HashtagPage';
 
 export default function App() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState('home');
     const [profileUid, setProfileUid] = useState(null);
+    const [hashtagName, setHashtagName] = useState(null);
     const [idToken, setIdToken] = useState('');
     const [pageTransition, setPageTransition] = useState(false);
 
@@ -36,12 +38,16 @@ export default function App() {
         return () => unsubscribe();
     }, []);
 
-    const navigateTo = (pageName, uid = null) => {
+    const navigateTo = (pageName, uid = null, hashtag = null) => {
         // Add page transition effect
         setPageTransition(true);
         setTimeout(() => {
             setPage(pageName);
-            setProfileUid(uid);
+            if (pageName === 'profile') {
+                setProfileUid(uid);
+            } else if (pageName === 'hashtag') {
+                setHashtagName(uid); // We're using uid parameter for hashtag name too
+            }
             setPageTransition(false);
         }, 300);
     };
@@ -71,6 +77,8 @@ export default function App() {
                 return <LoginPage navigateTo={navigateTo} />;
             case 'register':
                 return <RegisterPage navigateTo={navigateTo} />;
+            case 'hashtag':
+                return <HashtagPage {...props} hashtagName={hashtagName} />;
             case 'explore':
                 return <div className="coming-soon">Explore feature coming soon!</div>;
             case 'notifications':

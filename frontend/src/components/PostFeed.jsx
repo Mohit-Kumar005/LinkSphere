@@ -403,6 +403,28 @@ const PostFeed = ({ navigateTo, userId = null }) => {
         }));
     };
 
+    const renderPostContent = (content) => {
+        // Split content by hashtags and render them as clickable spans
+        return content.split(/(#[a-zA-Z0-9_]+)/g).map((part, index) => {
+            if (part.startsWith('#')) {
+                const tagName = part.substring(1); // Remove # from the tag
+                return (
+                    <span 
+                        key={index}
+                        className="hashtag-link"
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent the post click event
+                            navigateTo('hashtag', tagName);
+                        }}
+                    >
+                        {part}
+                    </span>
+                );
+            }
+            return <span key={index}>{part}</span>;
+        });
+    };
+
     if (loading) {
         return (
             <div className="loader-post">
@@ -477,7 +499,9 @@ const PostFeed = ({ navigateTo, userId = null }) => {
                         </div>
                     ) : (
                         <>
-                            <p className="post-content">{post.content}</p>
+                            <div className="post-content">
+                                {renderPostContent(post.content)}
+                            </div>
                             
                             <div className="post-footer">
                                 <div className="post-reactions">

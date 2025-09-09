@@ -10,29 +10,32 @@ import {
     addComment,
     getComments,
     updateComment,
-    deleteComment
+    deleteComment,
+    searchHashtags,
+    getPostsByHashtag,
+    getPostsByUser
 } from '../controllers/postController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Existing Routes
+// Search endpoints must come before parameter routes
+router.get('/search/hashtag', authMiddleware, searchHashtags);
+router.get('/hashtag/:hashtag', authMiddleware, getPostsByHashtag);
+router.get('/user/:userId', authMiddleware, getPostsByUser);
+
+// Standard routes
 router.get('/', authMiddleware, getAllPosts);
 router.post('/', authMiddleware, createPost);
 router.delete('/:postId', authMiddleware, deletePost);
 router.put('/:postId', authMiddleware, updatePost);
 router.post('/:postId/like', authMiddleware, likePost);
-
-// --- NEW ROUTES ---
-// Route for sharing a post
 router.post('/:postId/share', authMiddleware, sharePost);
-// Route for adding a comment (reply) to a post
+
+// Comment routes
 router.post('/:postId/comments', authMiddleware, addComment);
-// Route for getting comments for a post
 router.get('/:postId/comments', getComments);
-// Route for updating a comment
 router.put('/:postId/comments/:commentId', authMiddleware, updateComment);
-// Route for deleting a comment
 router.delete('/:postId/comments/:commentId', authMiddleware, deleteComment);
 
 export default router;

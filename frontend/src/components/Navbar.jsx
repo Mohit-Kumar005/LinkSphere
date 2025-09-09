@@ -5,30 +5,74 @@ import './Navbar.css';
 
 const Navbar = ({ navigateTo, handleLogout }) => {
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
+    const [searchResults, setSearchResults] = useState({
+        users: [],
+        hashtags: []
+    });
     const [isSearching, setIsSearching] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [searchError, setSearchError] = useState(null);
     const searchRef = useRef(null);
     const menuRef = useRef(null);
 
     const handleSearch = async (query) => {
         setSearchQuery(query);
+        setSearchError(null);
+        
         if (query.trim().length < 2) {
-            setSearchResults([]);
+            setSearchResults({ users: [], hashtags: [] });
             return;
         }
 
         try {
             const token = await auth.currentUser.getIdToken();
-            const response = await fetch(`${API_URL}/api/users/search?q=${query}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
+            
+            // Check if the query starts with # for hashtag search
+            if (query.startsWith('#')) {
+                const hashtagQuery = query.substring(1); // Remove # from query
+                const response = await fetch(`${API_URL}/api/posts/search/hashtag?q=${hashtagQuery}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        // No results found - not an error
+                        setSearchResults({ users: [], hashtags: [] });
+                        return;
+                    }
+                    const errorText = await response.text();
+                    throw new Error(`Error ${response.status}: ${errorText || response.statusText}`);
                 }
-            });
-            const data = await response.json();
-            setSearchResults(data);
+                
+                const data = await response.json();
+                setSearchResults({ users: [], hashtags: data });
+            } else {
+                // Regular user search
+                const response = await fetch(`${API_URL}/api/users/search?q=${query}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        // No results found - not an error
+                        setSearchResults({ users: [], hashtags: [] });
+                        return;
+                    }
+                    const errorText = await response.text();
+                    throw new Error(`Error ${response.status}: ${errorText || response.statusText}`);
+                }
+                
+                const data = await response.json();
+                setSearchResults({ users: data, hashtags: [] });
+            }
         } catch (error) {
             console.error('Search failed:', error);
+            setSearchError('Search failed. Please try again.');
+            setSearchResults({ users: [], hashtags: [] });
         }
     };
 
@@ -45,6 +89,38 @@ const Navbar = ({ navigateTo, handleLogout }) => {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
+    const handleSearchInputKeyDown = (e) => {
+        // Auto-add hashtag symbol when user types space after #
+        if (e.key === ' ' && searchQuery.endsWith('#')) {
+            e.preventDefault();
+            setSearchQuery(searchQuery);
+        }
+        
+        // Handle Enter key to navigate to first result
+        if (e.key === 'Enter' && searchQuery.trim().length >= 2) {
+            e.preventDefault();
+            
+            if (searchQuery.startsWith('#') && searchResults.hashtags.length > 0) {
+                handleSearchSubmit('hashtag', searchResults.hashtags[0]);
+            } else if (searchResults.users.length > 0) {
+                handleSearchSubmit('user', searchResults.users[0]);
+            } else if (searchQuery.startsWith('#') && searchQuery.length > 1) {
+                // Search for hashtag even if no results
+                handleSearchSubmit('hashtag', { name: searchQuery.substring(1) });
+            }
+        }
+    };
+
+    const handleSearchSubmit = (type, item) => {
+        if (type === 'user') {
+            navigateTo('profile', item.id);
+        } else if (type === 'hashtag') {
+            navigateTo('hashtag', item.name);
+        }
+        setIsSearching(false);
+        setSearchQuery('');
+    };
 
     return (
         <header className="navbar">
@@ -103,32 +179,69 @@ const Navbar = ({ navigateTo, handleLogout }) => {
                         <input
                             type="text"
                             className="search-input"
-                            placeholder="Search..."
+                            placeholder="Search users or #hashtags..."
                             value={searchQuery}
                             onChange={(e) => handleSearch(e.target.value)}
+                            onKeyDown={handleSearchInputKeyDown}
                             onFocus={() => setIsSearching(true)}
                         />
-                        {isSearching && searchResults.length > 0 && (
+                        {isSearching && (
                             <div className="search-results">
-                                {searchResults.map(user => (
-                                    <div
-                                        key={user.id}
-                                        className="search-result-item"
-                                        onClick={() => {
-                                            navigateTo('profile', user.id);
-                                            setIsSearching(false);
-                                            setSearchQuery('');
-                                        }}
-                                    >
-                                        <div className="user-avatar">
-                                            {user.name ? user.name[0].toUpperCase() : '?'}
-                                        </div>
-                                        <div className="user-info">
-                                            <span className="user-name">{user.name}</span>
-                                            <span className="user-email">{user.email}</span>
-                                        </div>
+                                {searchError && (
+                                    <div className="search-error">{searchError}</div>
+                                )}
+                                
+                                {searchResults.users.length > 0 && (
+                                    <>
+                                        <div className="search-section-header">Users</div>
+                                        {searchResults.users.map(user => (
+                                            <div
+                                                key={user.id}
+                                                className="search-result-item"
+                                                onClick={() => handleSearchSubmit('user', user)}
+                                            >
+                                                <div className="user-avatar">
+                                                    {user.name ? user.name[0].toUpperCase() : '?'}
+                                                </div>
+                                                <div className="user-info">
+                                                    <span className="user-name">{user.name}</span>
+                                                    <span className="user-email">{user.email}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
+                                
+                                {searchResults.hashtags.length > 0 && (
+                                    <>
+                                        <div className="search-section-header">Hashtags</div>
+                                        {searchResults.hashtags.map(hashtag => (
+                                            <div
+                                                key={hashtag.name}
+                                                className="search-result-item hashtag-item"
+                                                onClick={() => handleSearchSubmit('hashtag', hashtag)}
+                                            >
+                                                <div className="hashtag-icon">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <path d="M4 9h16M4 15h16M10 3v18M14 3v18" />
+                                                    </svg>
+                                                </div>
+                                                <div className="hashtag-info">
+                                                    <span className="hashtag-name">#{hashtag.name}</span>
+                                                    <span className="hashtag-count">{hashtag.count} posts</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
+
+                                {searchQuery.trim().length >= 2 && !searchError && 
+                                  searchResults.users.length === 0 && 
+                                  searchResults.hashtags.length === 0 && (
+                                    <div className="search-no-results">
+                                        <p>No results found for "{searchQuery}"</p>
                                     </div>
-                                ))}
+                                )}
                             </div>
                         )}
                     </div>

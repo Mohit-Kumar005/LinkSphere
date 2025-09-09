@@ -274,6 +274,70 @@
   color: var(--error-color);
 }
 
+/* Enhanced Search Styles */
+.search-section-header {
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.search-no-results {
+  padding: var(--space-md);
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.btn-create-hashtag {
+  background: transparent;
+  border: 1px solid var(--primary-color);
+  border-radius: var(--border-radius-sm);
+  color: var(--primary-color);
+  padding: var(--space-sm) var(--space-md);
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-create-hashtag:hover {
+  background-color: rgba(108, 92, 231, 0.1);
+}
+
+.hashtag-item {
+  color: var(--primary-color);
+}
+
+.hashtag-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--border-radius-sm);
+  background-color: rgba(108, 92, 231, 0.1);
+  color: var(--primary-color);
+}
+
+.hashtag-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.hashtag-name {
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.hashtag-count {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
 /* Responsive Adjustments */
 .desktop-only {
   display: flex;
@@ -333,4 +397,14 @@
   .navbar-center {
     margin: 0 var(--space-sm);
   }
+}
+
+.search-error {
+  padding: var(--space-md);
+  text-align: center;
+  color: var(--error-color);
+  background-color: rgba(239, 68, 68, 0.1);
+  margin: var(--space-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
 }

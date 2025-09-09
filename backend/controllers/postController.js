@@ -236,3 +236,143 @@ export const deleteComment = async (req, res) => {
         res.status(500).json({ error: 'Failed to delete comment.' });
     }
 };
+
+// New function for hashtag search
+export const searchHashtags = async (req, res) => {
+    try {
+        const { q } = req.query;
+        
+        if (!q || q.trim().length < 2) {
+            return res.status(400).json({ error: 'Search query must be at least 2 characters long.' });
+        }
+        
+        const hashtagQuery = q.toLowerCase();
+        
+        // First, query all posts
+        const postsSnapshot = await db.collection('posts').get();
+        
+        // Process posts to extract and count hashtags
+        const hashtagCounts = {};
+        
+        postsSnapshot.docs.forEach(doc => {
+            const post = doc.data();
+            // Extract hashtags from post content using regex
+            const hashtags = (post.content.match(/#[a-zA-Z0-9_]+/g) || [])
+                .map(tag => tag.substring(1).toLowerCase()); // Remove # and lowercase
+                
+            hashtags.forEach(tag => {
+                if (tag.includes(hashtagQuery)) {
+                    if (hashtagCounts[tag]) {
+                        hashtagCounts[tag]++;
+                    } else {
+                        hashtagCounts[tag] = 1;
+                    }
+                }
+            });
+        });
+        
+        // Convert to array and sort by count
+        const results = Object.entries(hashtagCounts)
+            .map(([name, count]) => ({ name, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10); // Limit to top 10 results
+            
+        res.status(200).json(results);
+    } catch (error) {
+        console.error("Error searching hashtags:", error);
+        res.status(500).json({ error: 'Failed to search hashtags.' });
+    }
+};
+
+// New function to get posts by hashtag
+export const getPostsByHashtag = async (req, res) => {
+    try {
+        const { hashtag } = req.params;
+        
+        if (!hashtag || hashtag.trim().length < 1) {
+            return res.status(400).json({ error: 'Hashtag must not be empty.' });
+        }
+        
+        console.log(`Searching for posts with hashtag: #${hashtag}`);
+        
+        // Query all posts
+        const postsSnapshot = await db.collection('posts').orderBy('timestamp', 'desc').get();
+        
+        // Filter posts containing the hashtag
+        const hashtagPosts = [];
+        const hashtagRegex = new RegExp(`#${hashtag}\\b`, 'i'); // Case insensitive, word boundary
+        
+        for (const doc of postsSnapshot.docs) {
+            const postData = doc.data();
+            const post = { id: doc.id, ...postData };
+            
+            if (hashtagRegex.test(post.content)) {
+                // Get comment count for each post
+                const commentsSnapshot = await db.collection('posts').doc(doc.id).collection('comments').get();
+                post.commentCount = commentsSnapshot.size;
+
+                // If a user is authenticated, check if they've liked the post
+                if (req.user) {
+                    const { uid } = req.user;
+                    post.userLiked = (postData.likes || []).includes(uid);
+                } else {
+                    post.userLiked = false;
+                }
+                
+                // Always return the count of likes
+                post.likes = (postData.likes || []).length;
+                
+                hashtagPosts.push(post);
+            }
+        }
+        
+        console.log(`Found ${hashtagPosts.length} posts with hashtag #${hashtag}`);
+        res.status(200).json(hashtagPosts);
+    } catch (error) {
+        console.error("Error fetching posts by hashtag:", error);
+        res.status(500).json({ error: 'Failed to fetch posts by hashtag.' });
+    }
+};
+
+// Add this new function for getting posts by user
+export const getPostsByUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID is required.' });
+        }
+        
+        const postsSnapshot = await db.collection('posts')
+            .where('authorId', '==', userId)
+            .orderBy('timestamp', 'desc')
+            .get();
+        
+        const postsPromises = postsSnapshot.docs.map(async (doc) => {
+            const postData = doc.data();
+            const post = { id: doc.id, ...postData };
+            
+            // Get comment count for each post
+            const commentsSnapshot = await db.collection('posts').doc(doc.id).collection('comments').get();
+            post.commentCount = commentsSnapshot.size;
+
+            // If a user is authenticated, check which posts they've liked
+            if (req.user) {
+                const { uid } = req.user;
+                post.userLiked = (postData.likes || []).includes(uid);
+            } else {
+                post.userLiked = false;
+            }
+            // Always return the count of likes
+            post.likes = (postData.likes || []).length;
+            
+            return post;
+        });
+
+        const posts = await Promise.all(postsPromises);
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error("Error fetching user posts:", error);
+        res.status(500).json({ error: 'Failed to fetch user posts.' });
+    }
+};

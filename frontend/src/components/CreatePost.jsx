@@ -9,6 +9,7 @@ const CreatePost = ({ idToken, onPostCreated }) => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [charCount, setCharCount] = useState(0);
+    const [contentWithHashtags, setContentWithHashtags] = useState([]);
     const textareaRef = useRef(null);
     
     const MAX_CHARS = 280;
@@ -17,6 +18,15 @@ const CreatePost = ({ idToken, onPostCreated }) => {
         const text = e.target.value;
         setContent(text);
         setCharCount(text.length);
+        
+        // Parse content for hashtags to preview
+        if (text) {
+            // Split by hashtags and regular text
+            const parts = text.split(/(#[a-zA-Z0-9_]+)/g).filter(Boolean);
+            setContentWithHashtags(parts);
+        } else {
+            setContentWithHashtags([]);
+        }
     };
 
     const handlePost = async (e) => {
@@ -52,6 +62,7 @@ const CreatePost = ({ idToken, onPostCreated }) => {
             
             setContent('');
             setCharCount(0);
+            setContentWithHashtags([]);
             setSuccess('Post created successfully!');
             
             setTimeout(() => {
@@ -100,6 +111,18 @@ const CreatePost = ({ idToken, onPostCreated }) => {
                         disabled={isSubmitting}
                         maxLength={MAX_CHARS + 10} // Give a little flexibility but still prevent excessive input
                     />
+                    
+                    {contentWithHashtags.length > 0 && (
+                        <div className="content-preview">
+                            {contentWithHashtags.map((part, index) => (
+                                part.startsWith('#') ? (
+                                    <span key={index} className="hashtag-preview">{part}</span>
+                                ) : (
+                                    <span key={index}>{part}</span>
+                                )
+                            ))}
+                        </div>
+                    )}
                 </div>
                 
                 {error && <div className="composer-error">{error}</div>}
@@ -130,6 +153,11 @@ const CreatePost = ({ idToken, onPostCreated }) => {
                                 <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
                                 <line x1="9" y1="9" x2="9.01" y2="9"></line>
                                 <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                            </svg>
+                        </button>
+                        <button type="button" className="action-btn" title="Add Hashtag" onClick={() => setContent(prev => prev + '#')}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M4 9h16M4 15h16M10 3v18M14 3v18" />
                             </svg>
                         </button>
                     </div>

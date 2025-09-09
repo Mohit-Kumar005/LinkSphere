@@ -35,7 +35,7 @@ const LoginPage = ({ navigateTo }) => {
                                 <path d="M7 12h10M12 7v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                             </svg>
                         </div>
-                        <h1 className="text-gradient">Nexus</h1>
+                        <h1 className="text-gradient">LinkSphere</h1>
                     </div>
                     <h2>Welcome Back</h2>
                     <p>Sign in to connect with your network</p>

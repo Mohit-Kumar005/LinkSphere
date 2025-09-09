@@ -179,7 +179,7 @@ const Navbar = ({ navigateTo, handleLogout }) => {
                         <input
                             type="text"
                             className="search-input"
-                            placeholder="Search users or #hashtags..."
+                            placeholder="Search #hashtags..."
                             value={searchQuery}
                             onChange={(e) => handleSearch(e.target.value)}
                             onKeyDown={handleSearchInputKeyDown}

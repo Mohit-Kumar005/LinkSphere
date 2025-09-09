@@ -64,9 +64,9 @@ const RegisterPage = ({ navigateTo }) => {
                                 <path d="M7 12h10M12 7v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                             </svg>
                         </div>
-                        <h1 className="text-gradient">Nexus</h1>
+                        <h1 className="text-gradient">LinkSphere</h1>
                     </div>
-                    <h2>Join Nexus</h2>
+                    <h2>Join LinkSphere</h2>
                     <p>Create your account and start connecting</p>
                 </div>
                 

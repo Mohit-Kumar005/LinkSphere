@@ -36,6 +36,24 @@
   gap: var(--space-xs);
 }
 
+.author-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+}
+
 .author-post {
   color: var(--primary-light);
   font-weight: 600;
@@ -276,20 +294,246 @@
   background-color: rgba(158, 128, 222, 0.1);
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.comment-section {
+    margin-top: var(--space-lg);
+    padding-left: calc(44px + var(--space-md));
+    animation: fadeIn 0.4s ease;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
+.comment-input-form {
+    display: flex;
+    gap: var(--space-md);
+    align-items: flex-start;
+}
+
+.comment-input {
+    flex-grow: 1;
+    padding: var(--space-md);
+    background-color: var(--background-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    font-family: inherit;
+    resize: none;
+    transition: all 0.2s ease;
+}
+.comment-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.25);
+}
+
+.comment-submit-btn {
+    padding: var(--space-md) var(--space-lg);
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.comment-submit-btn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-1px);
+}
+.comment-submit-btn:disabled {
+    background-color: var(--background-tertiary);
+    cursor: not-allowed;
+    color: var(--text-tertiary);
+}
+
+/* Reply Feature Styles */
+.replies-container {
+  margin-top: var(--space-md);
+  padding-left: calc(44px + var(--space-md));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  animation: fadeIn 0.3s ease;
+}
+
+.reply-item {
+  background-color: var(--background-tertiary);
+  border-radius: var(--card-border-radius);
+  padding: var(--space-md);
+  border: 1px solid var(--border-color);
+  position: relative;
+}
+
+.reply-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.reply-author {
+  font-weight: 600;
+  color: var(--primary-light);
+  cursor: pointer;
+}
+
+.reply-author:hover {
+  text-decoration: underline;
+}
+
+.reply-time {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.reply-content {
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.replies-heading {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+  font-weight: 500;
+}
+
+.reply-form {
+  margin-top: var(--space-lg);
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-md);
+}
+
+.reply-textarea {
+  width: 100%;
+  padding: var(--space-md);
+  background-color: var(--background-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-family: inherit;
+  resize: none;
+  min-height: 80px;
+  margin-bottom: var(--space-md);
+  transition: all 0.2s ease;
+}
+
+.reply-textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.25);
+}
+
+.reply-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+}
+
+/* Reply edit and delete actions */
+.reply-actions-menu {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  display: flex;
+  gap: var(--space-xs);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.reply-item:hover .reply-actions-menu {
+  opacity: 1;
+}
+
+.reply-action-btn {
+  background-color: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  padding: var(--space-xs);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.reply-action-btn:hover {
+  background-color: var(--background-elevated);
+  color: var(--text-primary);
+}
+
+.reply-action-btn.edit:hover {
+  color: var(--accent-color);
+}
+
+.reply-action-btn.delete:hover {
+  color: var(--error-color);
+}
+
+.reply-edit-form {
+  margin-top: var(--space-sm);
+}
+
+.reply-edit-textarea {
+  width: 100%;
+  padding: var(--space-md);
+  background-color: var(--background-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-family: inherit;
+  resize: none;
+  min-height: 60px;
+  margin-bottom: var(--space-md);
+  transition: all 0.2s ease;
+}
+
+.reply-edit-textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.25);
+}
+
+.reply-edit-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+}
+
+/* Show/Hide Replies Button */
+.show-replies-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--background-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.show-replies-btn:hover {
+  background-color: var(--background-elevated);
+  color: var(--text-primary);
+}
+
+.show-replies-btn .icon {
+  transition: transform 0.3s ease;
+}
+
+.show-replies-btn.active .icon {
+  transform: rotate(180deg);
+}
+
+/* For mobile responsiveness */
+@media (max-width: 768px) {
+  .reply-actions-menu {
     opacity: 1;
   }
 }
@@ -321,3 +565,5 @@
     font-size: var(--font-size-xs);
   }
 }
+
+

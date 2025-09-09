@@ -1,8 +1,10 @@
 .navbar {
   height: var(--header-height);
   background-color: var(--background-secondary);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
   box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05);
 }

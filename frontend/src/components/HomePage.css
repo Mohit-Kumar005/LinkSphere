@@ -2,6 +2,7 @@
     min-height: 100vh;
     padding: var(--space-xl);
     background: transparent;
+    padding-top: calc(var(--header-height) + var(--space-xl));
 }
 
 .content-wrapper {
@@ -15,12 +16,25 @@
 
 .profile-sidebar,
 .news-sidebar {
+    position: fixed;
+    top: calc(var(--header-height) + var(--space-xl));
+    height: calc(100vh - var(--header-height) - (var(--space-xl) * 2));
+    overflow-y: auto;
+}
+
+.profile-sidebar {
+    left: calc((100vw - 1400px) / 2 + var(--space-xl));
+    width: 320px;
+}
+
+.news-sidebar {
     position: sticky;
-    top: calc(80px + var(--space-xl));
+    top: calc(var(--header-height) + var(--space-xl));
 }
 
 .main-feed {
     min-height: 100vh;
+    grid-column: 2 / 3;
 }
 
 .profile-card {
@@ -240,15 +254,17 @@
   gap: var(--space-lg);
   max-width: 1440px;
   margin: 0 auto;
-  min-height: calc(100vh - var(--header-height));
+  padding-top: var(--header-height);
+  min-height: 100vh;
 }
 
 /* Sidebar */
 .sidebar {
-  position: sticky;
-  top: calc(var(--header-height) + var(--space-lg));
-  height: fit-content;
+  position: fixed;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
   padding: var(--space-lg);
+  overflow-y: auto;
 }
 
 .profile-card {
@@ -333,6 +349,7 @@
 /* Main Content */
 .main-content {
   padding: var(--space-lg) 0;
+  grid-column: 2 / 3;
 }
 
 .content-header {
@@ -363,8 +380,8 @@
 .trending-sidebar {
   padding: var(--space-lg);
   position: sticky;
-  top: calc(var(--header-height) + var(--space-lg));
-  height: fit-content;
+  top: var(--header-height);
+  grid-column: 3 / 4;
 }
 
 .trending-card,
@@ -511,10 +528,11 @@
 /* Responsive Design */
 @media (max-width: 1200px) {
     .content-wrapper {
-        grid-template-columns: 280px 1fr;
+        grid-template-columns: 1fr;
         gap: var(--space-xl);
     }
     
+    .profile-sidebar,
     .news-sidebar {
         display: none;
     }
@@ -533,6 +551,9 @@
     .profile-sidebar,
     .news-sidebar {
         position: static;
+        height: auto;
+        overflow-y: visible;
+        width: auto;
     }
 }
 
@@ -588,25 +609,29 @@
 @media (max-width: 768px) {
   .home-page {
     grid-template-columns: 1fr;
-    padding: 0 var(--space-md);
+    padding: var(--header-height) var(--space-md) 0;
   }
 
   .sidebar {
     display: none;
   }
 
+  .main-content {
+    grid-column: 1 / -1;
+  }
+
   .content-header {
-    padding: 0 var(--space-md);
+    padding: 0;
   }
 }
 
 @media (max-width: 576px) {
   .home-page {
-    padding: 0 var(--space-sm);
+    padding: var(--header-height) var(--space-sm) 0;
   }
 
   .content-header {
-    padding: 0 var(--space-sm);
+    padding: 0;
   }
 }
 

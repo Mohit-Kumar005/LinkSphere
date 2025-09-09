@@ -122,7 +122,6 @@ export const likePost = async (req, res) => {
     }
 };
 
-// --- NEW FUNCTION: SHARE POST ---
 export const sharePost = async (req, res) => {
     try {
         const { postId } = req.params;
@@ -139,7 +138,6 @@ export const sharePost = async (req, res) => {
     }
 };
 
-// --- NEW FUNCTION: ADD COMMENT (REPLY) ---
 export const addComment = async (req, res) => {
     try {
         const { postId } = req.params;
@@ -162,5 +160,79 @@ export const addComment = async (req, res) => {
     } catch (error) {
         console.error("Error adding comment:", error);
         res.status(500).json({ error: 'Failed to add comment.' });
+    }
+};
+
+export const getComments = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const commentsSnapshot = await db.collection('posts').doc(postId).collection('comments').orderBy('timestamp', 'asc').get();
+        
+        const comments = commentsSnapshot.docs.map(doc => {
+            return { id: doc.id, ...doc.data() };
+        });
+        
+        res.status(200).json(comments);
+    } catch (error) {
+        console.error("Error fetching comments:", error);
+        res.status(500).json({ error: 'Failed to fetch comments.' });
+    }
+};
+
+export const updateComment = async (req, res) => {
+    try {
+        const { postId, commentId } = req.params;
+        const { content } = req.body;
+        const { uid } = req.user;
+
+        if (!content) {
+            return res.status(400).json({ error: 'Comment content is required.' });
+        }
+
+        const commentRef = db.collection('posts').doc(postId).collection('comments').doc(commentId);
+        const doc = await commentRef.get();
+        
+        if (!doc.exists) {
+            return res.status(404).json({ error: 'Comment not found.' });
+        }
+
+        if (doc.data().authorId !== uid) {
+            return res.status(403).json({ error: 'User not authorized to edit this comment.' });
+        }
+
+        await commentRef.update({ 
+            content,
+            editedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        
+        res.status(200).json({ message: 'Comment updated successfully.' });
+    } catch (error) {
+        console.error("Error updating comment:", error);
+        res.status(500).json({ error: 'Failed to update comment.' });
+    }
+};
+
+export const deleteComment = async (req, res) => {
+    try {
+        const { postId, commentId } = req.params;
+        const { uid } = req.user;
+
+        const commentRef = db.collection('posts').doc(postId).collection('comments').doc(commentId);
+        const doc = await commentRef.get();
+        
+        if (!doc.exists) {
+            return res.status(404).json({ error: 'Comment not found.' });
+        }
+
+        if (doc.data().authorId !== uid) {
+            return res.status(403).json({ error: 'User not authorized to delete this comment.' });
+        }
+
+        await commentRef.delete();
+        
+        res.status(200).json({ message: 'Comment deleted successfully.' });
+    } catch (error) {
+        console.error("Error deleting comment:", error);
+        res.status(500).json({ error: 'Failed to delete comment.' });
     }
 };

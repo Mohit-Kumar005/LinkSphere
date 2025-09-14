@@ -161,6 +161,27 @@ const HomePage = ({ navigateTo, idToken }) => {
                         </li>
                     </ul>
                 </div>
+                
+                <div className="sidebar-footer">
+                    <div className="footer-links">
+                        <a href="#" className="footer-link">About</a>
+                        <a href="#" className="footer-link">Accessibility</a>
+                        <a href="#" className="footer-link">Help Center</a>
+                    </div>
+                    <div className="footer-links">
+                        <a href="#" className="footer-link">Privacy & Terms</a>
+                        <a href="#" className="footer-link">Ad Choices</a>
+                        <a href="#" className="footer-link">Advertising</a>
+                    </div>
+                    <div className="footer-links">
+                        <a href="#" className="footer-link">Business Services</a>
+                        <a href="#" className="footer-link">Get the LinkSphere app</a>
+                        <a href="#" className="footer-link">More</a>
+                    </div>
+                    <div className="footer-copyright">
+                        <span>LinkSphere Corporation © {new Date().getFullYear()}</span>
+                    </div>
+                </div>
             </aside>
         </div>
     );

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
 import { auth } from '../firebase';
-import './postfeed.css';
+import './PostFeed.css';
 
 const PostFeed = ({ navigateTo, userId = null }) => {
     const [posts, setPosts] = useState([]);

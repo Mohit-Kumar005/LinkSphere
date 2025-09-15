@@ -1,1 +1,1 @@
-export const API_URL = 'http://localhost:5001'; // URL of your backend server 
+export const API_URL = 'https://linksphere-yfuw.onrender.com/'; // URL of your backend server 

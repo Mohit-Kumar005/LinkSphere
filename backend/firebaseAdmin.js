@@ -2,6 +2,7 @@ import admin from 'firebase-admin';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import path from "path";
 
 // Helper to find the correct path to the JSON file in an ES Module
 const __filename = fileURLToPath(import.meta.url); // <-- CORRECTED TYPO HERE

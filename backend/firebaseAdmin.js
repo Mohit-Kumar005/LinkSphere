@@ -8,8 +8,9 @@ const __filename = fileURLToPath(import.meta.url); // <-- CORRECTED TYPO HERE
 const __dirname = dirname(__filename);
 
 // Read and parse the JSON file
+const serviceAccountPath = path.resolve("serviceAccountKey.json");
 const serviceAccount = JSON.parse(
-  fs.readFileSync(join(__dirname, 'serviceAccountKey.json'))
+  fs.readFileSync(serviceAccountPath, "utf8")
 );
 
 admin.initializeApp({

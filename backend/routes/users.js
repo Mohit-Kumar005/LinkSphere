@@ -1,18 +1,21 @@
 import express from 'express';
-import { getProfile, searchUsers } from '../controllers/userController.js';
+// Corrected: Changed getProfile to getUserProfile
+import { getUserProfile, getUserPosts, createUserProfile, searchUsers } from '../controllers/userController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Search endpoint must come before parameter routes
+// Route for searching users
 router.get('/search', authMiddleware, searchUsers);
 
-// Get user profile by ID
-router.get('/:userId', getProfile);
+// GET /api/users/:uid - Fetches a user's profile information
+// Corrected: Changed getProfile to getUserProfile and :userId to :uid
+router.get('/:uid', getUserProfile);
 
+// GET /api/users/:uid/posts - Fetches all posts made by a specific user
+router.get('/:uid/posts', getUserPosts);
+
+// POST /api/users - Creates a user profile document in the database
 router.post('/', authMiddleware, createUserProfile);
-
-// GET /api/users/search - Searches users by name or email (requires authentication)
-router.get('/search', authMiddleware, searchUsers);
 
 export default router;

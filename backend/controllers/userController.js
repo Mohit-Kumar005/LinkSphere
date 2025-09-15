@@ -84,39 +84,42 @@ export const getProfile = async (req, res) => {
 export const searchUsers = async (req, res) => {
     try {
         const { q } = req.query;
-        
-        if (!q || q.trim().length < 2) {
-            return res.status(400).json({ error: 'Search query must be at least 2 characters long.' });
+        if (!q || q.length < 2) {
+            return res.status(200).json([]);
         }
+
+        const query = q.toLowerCase();
+
+        // Search by name (case-insensitive)
+        const nameQuery = db.collection('users')
+            .where('displayName', '>=', query)
+            .where('displayName', '<=', query + '\uf8ff')
+            .limit(5);
         
-        const searchQuery = q.toLowerCase();
-        const usersRef = db.collection('users');
-        const snapshot = await usersRef.get();
+        // Search by email (case-insensitive)
+        const emailQuery = db.collection('users')
+            .where('email', '>=', query)
+            .where('email', '<=', query + '\uf8ff')
+            .limit(5);
+
+        const [nameSnapshot, emailSnapshot] = await Promise.all([
+            nameQuery.get(),
+            emailQuery.get()
+        ]);
+
+        const users = {};
         
-        const results = [];
-        
-        snapshot.forEach(doc => {
-            const userData = doc.data();
-            const name = userData.name || '';
-            const email = userData.email || '';
-            
-            // Check if name or email contains the search query
-            if (name.toLowerCase().includes(searchQuery) || 
-                email.toLowerCase().includes(searchQuery)) {
-                results.push({
-                    id: doc.id,
-                    name: userData.name,
-                    email: userData.email
-                });
-            }
+        nameSnapshot.forEach(doc => {
+            users[doc.id] = { id: doc.id, ...doc.data() };
         });
         
-        // Limit to top 10 results
-        const limitedResults = results.slice(0, 10);
-        
-        res.status(200).json(limitedResults);
+        emailSnapshot.forEach(doc => {
+            users[doc.id] = { id: doc.id, ...doc.data() };
+        });
+
+        res.status(200).json(Object.values(users));
     } catch (error) {
-        console.error('Error searching users:', error);
-        res.status(500).json({ error: 'Failed to search users' });
+        console.error("Error searching users:", error);
+        res.status(500).json({ error: 'Failed to search users.' });
     }
 };

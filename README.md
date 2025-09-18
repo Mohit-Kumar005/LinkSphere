@@ -2,6 +2,8 @@
 
 A React-based social media application for connecting, sharing, and discovering content.
 
+🔗 [Live Site](https://linksphere-frontend-ltq6.onrender.com/)
+
 ## Features
 
 - User authentication
